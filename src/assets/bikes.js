@@ -7,7 +7,7 @@ export const bikes = [
       "color": "Red",
       "price": 4500,
       "size": "56cm",
-      "image": "https://example.com/images/trek_domane_sl7.jpg"
+      "image": "https://www.bikevienna.at/wp-content/uploads/2023/10/30429_checkpointalr4.jpg"
     },
     {
       "id": 2,
@@ -17,7 +17,7 @@ export const bikes = [
       "color": "Matte Black",
       "price": 3700,
       "size": "M",
-      "image": "https://example.com/images/specialized_stumpjumper_comp.jpg"
+      "image": "https://www.bikevienna.at/wp-content/uploads/2023/10/30429_checkpointalr4.jpg"
     },
     {
       "id": 3,
@@ -27,7 +27,7 @@ export const bikes = [
       "color": "Blue",
       "price": 3200,
       "size": "54cm",
-      "image": "https://example.com/images/cannondale_synapse_carbon_105.jpg"
+      "image": "https://www.bikevienna.at/wp-content/uploads/2023/10/30429_checkpointalr4.jpg"
     }
   ]
   
