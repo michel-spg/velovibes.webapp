@@ -1,6 +1,18 @@
 <script setup>
-import { bikes } from '@/assets/bikes.js'
-import { RouterLink } from 'vue-router';
+// import { bikes } from '@/assets/bikes.js'
+import { onMounted, ref } from 'vue';
+
+const bikes = ref([]);
+
+async function fetchBikes() {
+  const response = await fetch('http://localhost:3000/api/bikes');
+  bikes.value = await response.json();
+  console.log(bikes.value);
+}
+
+onMounted(() => {
+  fetchBikes();
+});
 </script>
 
 <template>
@@ -11,16 +23,18 @@ import { RouterLink } from 'vue-router';
       <!-- loop through the bikes and show them in a card element -->
       <div v-for="bike in bikes" :key="bike.id" class="col-md-4 mb-3">
         <div class="card h-100">
-          <img :src="bike.image" class="card-img-top" alt="bike image">
+          <img :src="`http://localhost:3000${bike.image}`" class="card-img-top" alt="bike image">
           <div class="card-body">
             <h5 class="card-title">{{ bike.brand }}</h5>
             <p class="card-text">{{ bike.model }}</p>
             <p class="card-text">{{ bike.category }}</p>
             <p class="card-text"><small class="text-muted">{{ bike.price }}</small></p>
-            <!-- <p class="card-text">
-              <router-link :to="{ name: 'BikeDetails', params: { id: bike.id } }" class="btn btn-primary">View
+            <p class="card-text">
+              <!-- <router-link :to="{ name: 'BikeDetails', params: { id: bike.id } }" class="btn btn-primary">View
+                details</router-link> -->
+              <router-link :to="`/bikes/${bike.id}`" class="btn btn-primary">View
                 details</router-link>
-            </p> -->
+            </p>
           </div>
         </div>
       </div>
