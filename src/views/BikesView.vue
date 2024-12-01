@@ -1,5 +1,4 @@
 <script setup>
-// import { bikes } from '@/assets/bikes.js'
 import { onMounted, ref } from 'vue';
 
 const bikes = ref([]);
@@ -16,6 +15,14 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="container mt-3 rounded text-center">
+    <!-- Button to navigate to the Add Bike page -->
+    <router-link to="/bikes/add">
+      <button class="btn btn-primary text-white"><i class="bi bi-plus"></i> Bike
+        hinzufügen</button>
+    </router-link>
+  </div>
+
   <div class="container mt-3">
     <h1>Bikes</h1>
     <!-- copilot prompt: add a row and 3 columns to show the bikes in a card element -->

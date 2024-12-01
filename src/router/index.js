@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import BikesView from '../views/BikesView.vue'
 import BikeDetailsView from '../views/BikeDetailsView.vue'
+import AddBikeView from '@/views/AddBikeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/bikes/:id',
       name: 'bikeDetails',
       component: BikeDetailsView
+    },
+    {
+      path: '/bikes/add',
+      name: 'addBike',
+      component: AddBikeView
     },
     {
       path: "/:catchAll(.*)",
