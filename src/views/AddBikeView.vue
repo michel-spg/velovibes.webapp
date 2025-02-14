@@ -17,6 +17,9 @@ const startValidation = ref(false); // Steuert die Validierung
 
 // Validierung für das Inputfeld Marke
 const isValidBrand = computed(() => startValidation.value ? brand.value.length >= 2 : true);
+const isValidModel = computed(() => startValidation.value ? model.value.length >= 2 : true);
+const isValidCategory = computed(() => startValidation.value ? category.value.length >= 2 : true);
+const isValidColor = computed(() => startValidation.value ? color.value.length >= 2 : true);
 const isValidPrice = computed(() => startValidation.value ? price.value > 0 : true);
 
 // Neues Equipment hinzufügen
@@ -52,7 +55,11 @@ const addBike = async () => {
     formData.append(`equipment[${index}]`, item); // Fügt jedes Equipment-Item als String hinzu
   });
 
-  if (isValidBrand.value && isValidPrice.value) {
+  if (isValidBrand.value
+    && isValidPrice.value
+    && isValidModel.value
+    && isValidCategory.value
+    && isValidColor.value) {
     const response = await fetch('http://localhost:3000/api/bikes', {
       method: 'POST',
       body: formData,
@@ -61,6 +68,7 @@ const addBike = async () => {
     if (response.ok) {
       successMessage.value = 'Fahrrad erfolgreich hinzugefügt!';
       isFormVisible.value = false; // Formular ausblenden
+      errorMessage.value = ''; // Fehlermeldung zurücksetzen
     } else {
       errorMessage.value = 'Fehler beim Hinzufügen des Fahrrads!';
     }
@@ -90,16 +98,19 @@ const addBike = async () => {
           <div class="mb-3">
             <label for="model" class="form-label">Modell</label>
             <input type="text" class="form-control" id="model" v-model="model" required />
+            <p class="text-danger" v-if="!isValidModel">Bitte mindestens 2 Zeichen eingeben!</p>
           </div>
 
           <div class="mb-3">
             <label for="category" class="form-label">Kategorie</label>
             <input type="text" class="form-control" id="category" v-model="category" required />
+            <p class="text-danger" v-if="!isValidCategory">Bitte mindestens 2 Zeichen eingeben!</p>
           </div>
 
           <div class="mb-3">
             <label for="color" class="form-label">Farbe</label>
             <input type="text" class="form-control" id="color" v-model="color" required />
+            <p class="text-danger" v-if="!isValidColor">Bitte mindestens 2 Zeichen eingeben!</p>
           </div>
 
           <div class="mb-3">
@@ -110,12 +121,17 @@ const addBike = async () => {
 
           <div class="mb-3">
             <label for="size" class="form-label">Rahmengröße</label>
-            <input type="text" class="form-control" id="size" v-model="size" required />
+            <select class="form-select" id="size" v-model="size" required>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+            </select>
           </div>
 
           <div class="mb-3">
             <label for="description" class="form-label">Beschreibung</label>
-            <textarea class="form-control" id="description" v-model="description" required></textarea>
+            <textarea class="form-control" id="description" v-model="description"></textarea>
           </div>
 
           <!-- Bild-Upload -->
