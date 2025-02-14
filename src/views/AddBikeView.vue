@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const brand = ref('');
 const model = ref('');
@@ -13,6 +13,11 @@ const imageFile = ref(null); // Hält das Bild
 const successMessage = ref(''); // Hält die Erfolgsmeldung
 const errorMessage = ref(''); // Hält die Fehlermeldung
 const isFormVisible = ref(true); // Steuert die Sichtbarkeit des Formulars
+const startValidation = ref(false); // Steuert die Validierung
+
+// Validierung für das Inputfeld Marke
+const isValidBrand = computed(() => startValidation.value ? brand.value.length >= 2 : true);
+const isValidPrice = computed(() => startValidation.value ? price.value > 0 : true);
 
 // Neues Equipment hinzufügen
 const addEquipment = () => {
@@ -32,6 +37,7 @@ const handleImageUpload = (event) => {
 // Fahrrad hinzufügen
 const addBike = async () => {
   const formData = new FormData();
+  startValidation.value = true;
 
   formData.append('brand', brand.value);
   formData.append('model', model.value);
@@ -46,16 +52,18 @@ const addBike = async () => {
     formData.append(`equipment[${index}]`, item); // Fügt jedes Equipment-Item als String hinzu
   });
 
-  const response = await fetch('http://localhost:3000/api/bikes', {
-    method: 'POST',
-    body: formData,
-  });
+  if (isValidBrand.value && isValidPrice.value) {
+    const response = await fetch('http://localhost:3000/api/bikes', {
+      method: 'POST',
+      body: formData,
+    });
 
-  if (response.ok) {
-    successMessage.value = 'Fahrrad erfolgreich hinzugefügt!';
-    isFormVisible.value = false; // Formular ausblenden
-  } else {
-    errorMessage.value = 'Fehler beim Hinzufügen des Fahrrads!';
+    if (response.ok) {
+      successMessage.value = 'Fahrrad erfolgreich hinzugefügt!';
+      isFormVisible.value = false; // Formular ausblenden
+    } else {
+      errorMessage.value = 'Fehler beim Hinzufügen des Fahrrads!';
+    }
   }
 };
 </script>
@@ -76,6 +84,7 @@ const addBike = async () => {
           <div class="mb-3">
             <label for="brand" class="form-label">Marke</label>
             <input type="text" class="form-control" id="brand" v-model="brand" required />
+            <p class="text-danger" v-if="!isValidBrand">Bitte mindestens 2 Zeichen eingeben!</p>
           </div>
 
           <div class="mb-3">
@@ -96,6 +105,7 @@ const addBike = async () => {
           <div class="mb-3">
             <label for="price" class="form-label">Preis (€)</label>
             <input type="number" class="form-control" id="price" v-model="price" step="0.01" required />
+            <p class="text-danger" v-if="!isValidPrice">Preis darf nicht negativ oder 0 sein!</p>
           </div>
 
           <div class="mb-3">
