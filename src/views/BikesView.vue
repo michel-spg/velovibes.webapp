@@ -1,10 +1,18 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-
+import { useAuthStore } from '../stores/auth';
 const bikes = ref([]);
 
+const authStore = useAuthStore();
+
 async function fetchBikes() {
-  const response = await fetch('http://localhost:3000/api/bikes');
+  const token = await authStore.getUser?.getIdToken();
+  console.log(token);
+  const response = await fetch('http://localhost:3000/api/bikes', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
   bikes.value = await response.json();
   console.log(bikes.value);
 }
