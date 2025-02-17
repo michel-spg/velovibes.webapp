@@ -1,6 +1,7 @@
 <template>
   <div class="register-container">
     <h2>Login</h2>
+    <div v-if="error" class="alert alert-danger">{{ error }}</div>
     <form @submit.prevent="handleLogin" class="register-form">
       <div class="form-group">
         <label for="email">Email</label>
@@ -22,7 +23,9 @@
           placeholder="Enter your password"
         />
       </div>
-      <button type="submit" class="register-button">Login</button>
+      <button type="submit" class="register-button" :disabled="loading">
+        {{ loading ? 'Logging in...' : 'Login' }}
+      </button>
       
       <div class="divider">
         <span>or</span>
@@ -32,6 +35,7 @@
         type="button" 
         class="google-button"
         @click="handleGoogleSignIn"
+        :disabled="loading"
       >
         <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo" />
         Continue with Google
@@ -41,6 +45,10 @@
 </template>
 
 <script>
+import { useAuthStore } from '../stores/auth'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'LoginView',
   data() {
@@ -49,14 +57,28 @@ export default {
       password: ''
     }
   },
+  setup() {
+    const authStore = useAuthStore()
+    const router = useRouter()
+    const { loading, error } = storeToRefs(authStore)
+    return { authStore, router, loading, error }
+  },
   methods: {
-    handleLogin() {
-      // TODO: Implement login logic here
-      console.log('Login attempted with:', this.email)
+    async handleLogin() {
+      try {
+        await this.authStore.loginWithEmail(this.email, this.password)
+        this.router.push('/bikes')
+      } catch (error) {
+        console.error('Login failed:', error)
+      }
     },
-    handleGoogleSignIn() {
-      // TODO: Implement Google Sign-In logic here
-      console.log('Google Sign-In attempted')
+    async handleGoogleSignIn() {
+      try {
+        await this.authStore.loginWithGoogle()
+        this.router.push('/bikes')
+      } catch (error) {
+        console.error('Google sign-in failed:', error)
+      }
     }
   }
 }

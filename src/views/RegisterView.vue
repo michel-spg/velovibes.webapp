@@ -1,6 +1,7 @@
 <template>
   <div class="register-container">
     <h2>Create Account</h2>
+    <div v-if="error" class="alert alert-danger">{{ error }}</div>
     <form @submit.prevent="handleRegister" class="register-form">
       <div class="form-group">
         <label for="email">Email</label>
@@ -32,7 +33,9 @@
           placeholder="Confirm your password"
         />
       </div>
-      <button type="submit" class="register-button">Register</button>
+      <button type="submit" class="register-button" :disabled="loading">
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
       
       <div class="divider">
         <span>or</span>
@@ -42,6 +45,7 @@
         type="button" 
         class="google-button"
         @click="handleGoogleSignIn"
+        :disabled="loading"
       >
         <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo" />
         Continue with Google
@@ -51,6 +55,10 @@
 </template>
 
 <script>
+import { useAuthStore } from '../stores/auth'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'RegisterView',
   data() {
@@ -60,18 +68,32 @@ export default {
       confirmPassword: ''
     }
   },
+  setup() {
+    const authStore = useAuthStore()
+    const router = useRouter()
+    const { loading, error } = storeToRefs(authStore)
+    return { authStore, router, loading, error }
+  },
   methods: {
-    handleRegister() {
+    async handleRegister() {
       if (this.password !== this.confirmPassword) {
-        alert('Passwords do not match!')
+        this.error = 'Passwords do not match!'
         return
       }
-      // TODO: Implement registration logic here
-      console.log('Registration attempted with:', this.email)
+      try {
+        await this.authStore.registerWithEmail(this.email, this.password)
+        this.router.push('/bikes')
+      } catch (error) {
+        console.error('Registration failed:', error)
+      }
     },
-    handleGoogleSignIn() {
-      // TODO: Implement Google Sign-In logic here
-      console.log('Google Sign-In attempted')
+    async handleGoogleSignIn() {
+      try {
+        await this.authStore.loginWithGoogle()
+        this.router.push('/bikes')
+      } catch (error) {
+        console.error('Google sign-in failed:', error)
+      }
     }
   }
 }
